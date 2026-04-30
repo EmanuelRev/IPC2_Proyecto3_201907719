@@ -1,4 +1,4 @@
-// carga de fstossssss
+// controladorrrñ
 
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
@@ -14,7 +14,6 @@ namespace BackendAPI.Controllers
         [HttpPost("configuracion")]
         public async Task<IActionResult> CargarConfiguracion()
         {
-        
             using StreamReader reader = new StreamReader(Request.Body);
             string xmlContent = await reader.ReadToEndAsync();
 
@@ -43,7 +42,11 @@ namespace BackendAPI.Controllers
             LectorXML lector = new LectorXML();
             lector.ProcesarTransacciones(xmlContent);
 
-            return Ok("Transacciones encoladas exitosamente.");
+            MotorPagos motor = new MotorPagos();
+            motor.ProcesarColaTransacciones();
+
+            string respuestaXml = lector.GenerarRespuestaTransacciones();
+            return Content(respuestaXml, "application/xml");
         }
     }
 }

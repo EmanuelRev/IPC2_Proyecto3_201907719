@@ -1,3 +1,5 @@
+
+// lector xmllll
 using System;
 using System.Xml;
 using System.Text.RegularExpressions;
@@ -9,7 +11,7 @@ namespace BackendAPI.Utilidades
 {
     public class LectorXML
     {
-        private static readonly Regex RegexNIT = new Regex(@"[0-9]+-[0-9Kk]+");
+        private static readonly Regex RegexNIT = new Regex(@"[A-Za-z0-9\-]+");
         private static readonly Regex RegexFecha = new Regex(@"[0-3][0-9]/[0-1][0-9]/[0-9]{4}");
 
         public void ProcesarConfiguracion(string xmlContent)
@@ -37,7 +39,7 @@ namespace BackendAPI.Utilidades
             {
                 foreach (XmlNode nodo in nodosClientes)
                 {
-                    string nitCrudo = nodo["nit"]?.InnerText;
+                    string nitCrudo = nodo["NIT"]?.InnerText;
                     string nombre = nodo["nombre"]?.InnerText.Trim();
 
                     if (!string.IsNullOrEmpty(nitCrudo))
@@ -111,8 +113,8 @@ namespace BackendAPI.Utilidades
             {
                 foreach (XmlNode nodo in nodosFacturas)
                 {
-                    string numero = nodo["numero"]?.InnerText.Trim();
-                    string nitCrudo = nodo["nit"]?.InnerText;
+                    string numero = nodo["numeroFactura"]?.InnerText.Trim();
+                    string nitCrudo = nodo["NITcliente"]?.InnerText;
                     string fechaCruda = nodo["fecha"]?.InnerText;
                     string valorStr = nodo["valor"]?.InnerText.Trim();
 
@@ -144,9 +146,9 @@ namespace BackendAPI.Utilidades
                 foreach (XmlNode nodo in nodosPagos)
                 {
                     string codigoBanco = nodo["codigoBanco"]?.InnerText.Trim();
-                    string nitCrudo = nodo["nit"]?.InnerText;
+                    string nitCrudo = nodo["NITcliente"]?.InnerText;
                     string fechaCruda = nodo["fecha"]?.InnerText;
-                    string importeStr = nodo["importe"]?.InnerText.Trim();
+                    string importeStr = nodo["valor"]?.InnerText.Trim();
 
                     if (!string.IsNullOrEmpty(nitCrudo) && !string.IsNullOrEmpty(fechaCruda))
                     {
@@ -168,6 +170,26 @@ namespace BackendAPI.Utilidades
                     }
                 }
             }
+        }
+
+        public string GenerarRespuestaTransacciones()
+        {
+            string xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+            xml += "<respuestas>\n";
+
+            Nodo actualCliente = Memoria.ListaClientes.Cabeza;
+            while (actualCliente != null)
+            {
+                Cliente c = (Cliente)actualCliente.Dato;
+                xml += "  <cliente>\n";
+                xml += $"    <nit>{c.NIT}</nit>\n";
+                xml += $"    <pago_recibido>{c.SaldoAFavor}</pago_recibido>\n";
+                xml += "  </cliente>\n";
+                actualCliente = actualCliente.Siguiente;
+            }
+
+            xml += "</respuestas>";
+            return xml;
         }
     }
 }

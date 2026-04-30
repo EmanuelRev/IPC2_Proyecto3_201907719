@@ -12,5 +12,8 @@ namespace BackendAPI.Modelos
         
     
         public Cola FacturasPendientes { get; set; } = new Cola();
+
+        
+        public Pila Historial { get; set; } = new Pila();
     }
 }

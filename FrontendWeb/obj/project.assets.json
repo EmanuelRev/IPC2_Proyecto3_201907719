@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Emanuel\\Proyecto3_ITGSA\\FrontendWeb\\FrontendWeb.csproj",
+      "projectUniqueName": "C:\\Users\\Emanuel\\Proyecto3_ITGSA\\IPC2_Proyecto3_201907719\\FrontendWeb\\FrontendWeb.csproj",
       "projectName": "FrontendWeb",
-      "projectPath": "C:\\Users\\Emanuel\\Proyecto3_ITGSA\\FrontendWeb\\FrontendWeb.csproj",
+      "projectPath": "C:\\Users\\Emanuel\\Proyecto3_ITGSA\\IPC2_Proyecto3_201907719\\FrontendWeb\\FrontendWeb.csproj",
       "packagesPath": "C:\\Users\\Emanuel\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Emanuel\\Proyecto3_ITGSA\\FrontendWeb\\obj\\",
+      "outputPath": "C:\\Users\\Emanuel\\Proyecto3_ITGSA\\IPC2_Proyecto3_201907719\\FrontendWeb\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Emanuel\\AppData\\Roaming\\NuGet\\NuGet.Config"

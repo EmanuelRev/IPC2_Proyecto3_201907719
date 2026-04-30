@@ -1,0 +1,56 @@
+@page
+@model FrontendWeb.Pages.CargaArchivosModel
+@{
+    ViewData["Title"] = "Carga de Archivos";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Cargar Archivos XML</h1>
+    <p>Selecciona los archivos para configurar el sistema o procesar transacciones.</p>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                Cargar Configuración (Bancos y Clientes)
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" asp-page-handler="Configuracion">
+                    <div class="mb-3">
+                        <input class="form-control" type="file" name="archivoConfig" accept=".xml" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Procesar Configuración</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                Cargar Transacciones (Facturas y Pagos)
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" asp-page-handler="Transacciones">
+                    <div class="mb-3">
+                        <input class="form-control" type="file" name="archivoTransac" accept=".xml" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Procesar Transacciones</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.MensajeRespuesta))
+{
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <h4>Respuesta del Servidor:</h4>
+                <pre>@Model.MensajeRespuesta</pre>
+            </div>
+        </div>
+    </div>
+}
