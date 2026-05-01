@@ -1,0 +1,121 @@
+@page
+@model FrontendWeb.Pages.EstadoCuentaModel
+@{
+    ViewData["Title"] = "Estado de Cuenta";
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<div class="text-center mb-4">
+    <h1 class="display-4">Estado de Cuenta de Clientes</h1>
+    <p>Consulta el saldo y los pagos realizados por cada cliente.</p>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.MensajeError))
+{
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="alert alert-danger">
+                <strong>¡Ocurrió un error!</strong> @Model.MensajeError
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row mb-3">
+    <!-- 2. Agregamos el botón de descargar a la par del buscador -->
+    <div class="col-md-8 offset-md-2 d-flex gap-2">
+        <input type="text" id="buscadorNIT" class="form-control form-control-lg" placeholder="Buscar por NIT..." onkeyup="filtrarTabla()">
+        <button class="btn btn-danger btn-lg px-4" onclick="generarPDF()">
+           Descargar
+        </button>
+    </div>
+</div>
+
+
+<div id="zonaPDF" class="p-3 bg-white">
+    <div class="text-center mb-4 d-none" id="tituloPDF">
+        <h2>Reporte de Estado de Cuenta - ITGSA</h2>
+        <hr />
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered table-striped" id="tablaClientes">
+            <thead class="table-dark">
+                <tr>
+                    <th>NIT</th>
+                    <th>Nombre del Cliente</th>
+                    <th>Total Pagado</th>
+                    <th>Saldo a Favor</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Clientes != null && Model.Clientes.Count > 0)
+                {
+                    foreach (var cliente in Model.Clientes)
+                    {
+                        <tr>
+                            <td class="fw-bold">@cliente.nit</td>
+                            <td>@cliente.nombre</td>
+                            <td class="text-success">Q @cliente.totalPagado.ToString("0.00")</td>
+                            <td class="text-primary">Q @cliente.saldoAFavor.ToString("0.00")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">
+                            No hay clientes cargados en el sistema.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    
+    function filtrarTabla() {
+        var input = document.getElementById("buscadorNIT");
+        var filter = input.value.toUpperCase();
+        var table = document.getElementById("tablaClientes");
+        var tr = table.getElementsByTagName("tr");
+
+        for (var i = 1; i < tr.length; i++) {
+            var td = tr[i].getElementsByTagName("td")[0]; 
+            if (td) {
+                var txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    
+    function generarPDF() {
+    
+        var elemento = document.getElementById('zonaPDF');
+        
+        
+        document.getElementById('tituloPDF').classList.remove('d-none');
+
+        
+        var opciones = {
+            margin:       10,
+            filename:     'EstadoDeCuenta_ITGSA.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        
+        html2pdf().set(opciones).from(elemento).save().then(function() {
+            document.getElementById('tituloPDF').classList.add('d-none');
+        });
+    }
+</script>

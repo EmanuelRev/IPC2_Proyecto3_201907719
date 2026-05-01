@@ -25,7 +25,9 @@ namespace BackendAPI.Controllers
             LectorXML lector = new LectorXML();
             lector.ProcesarConfiguracion(xmlContent);
 
-            return Ok("Configuración de Bancos y Clientes cargada exitosamente.");
+            
+            string respuestaXml = lector.GenerarRespuestaConfiguracion();
+            return Content(respuestaXml, "application/xml");
         }
 
         [HttpPost("transacciones")]

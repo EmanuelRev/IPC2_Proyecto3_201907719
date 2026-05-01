@@ -14,8 +14,25 @@ namespace BackendAPI.Utilidades
         private static readonly Regex RegexNIT = new Regex(@"[A-Za-z0-9\-]+");
         private static readonly Regex RegexFecha = new Regex(@"[0-3][0-9]/[0-1][0-9]/[0-9]{4}");
 
+        private int bancosCreados = 0;
+        private int bancosActualizados = 0;
+        private int clientesCreados = 0;
+        private int clientesActualizados = 0;
+
+        private int facturasNuevas = 0;
+        private int facturasDuplicadas = 0;
+        private int facturasError = 0;
+        private int pagosNuevos = 0;
+        private int pagosDuplicados = 0;
+        private int pagosError = 0;
+
         public void ProcesarConfiguracion(string xmlContent)
         {
+            bancosCreados = 0;
+            bancosActualizados = 0;
+            clientesCreados = 0;
+            clientesActualizados = 0;
+
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(xmlContent);
 
@@ -67,6 +84,7 @@ namespace BackendAPI.Utilidades
                 {
                     b.Nombre = nombre; 
                     existe = true;
+                    bancosActualizados++;
                     break;
                 }
                 actual = actual.Siguiente;
@@ -76,6 +94,7 @@ namespace BackendAPI.Utilidades
             {
                 Banco nuevoBanco = new Banco { Codigo = codigo, Nombre = nombre };
                 Memoria.ListaBancos.Agregar(nuevoBanco);
+                bancosCreados++;
             }
         }
 
@@ -91,6 +110,7 @@ namespace BackendAPI.Utilidades
                 {
                     c.Nombre = nombre; 
                     existe = true;
+                    clientesActualizados++;
                     break;
                 }
                 actual = actual.Siguiente;
@@ -100,11 +120,36 @@ namespace BackendAPI.Utilidades
             {
                 Cliente nuevoCliente = new Cliente { NIT = nit, Nombre = nombre };
                 Memoria.ListaClientes.Agregar(nuevoCliente);
+                clientesCreados++;
             }
+        }
+
+        public string GenerarRespuestaConfiguracion()
+        {
+            string xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+            xml += "<respuesta>\n";
+            xml += "  <clientes>\n";
+            xml += $"    <creados>{clientesCreados}</creados>\n";
+            xml += $"    <actualizados>{clientesActualizados}</actualizados>\n";
+            xml += "  </clientes>\n";
+            xml += "  <bancos>\n";
+            xml += $"    <creados>{bancosCreados}</creados>\n";
+            xml += $"    <actualizados>{bancosActualizados}</actualizados>\n";
+            xml += "  </bancos>\n";
+            xml += "</respuesta>";
+            
+            return xml;
         }
 
         public void ProcesarTransacciones(string xmlContent)
         {
+            facturasNuevas = 0;
+            facturasDuplicadas = 0;
+            facturasError = 0;
+            pagosNuevos = 0;
+            pagosDuplicados = 0;
+            pagosError = 0;
+
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(xmlContent);
 
@@ -125,17 +170,32 @@ namespace BackendAPI.Utilidades
 
                         if (matchNIT.Success && matchFecha.Success && decimal.TryParse(valorStr, out decimal valor))
                         {
-                            Factura nuevaFactura = new Factura
+                            if (ExisteFactura(numero))
                             {
-                                Numero = numero,
-                                NITCliente = matchNIT.Value,
-                                Fecha = matchFecha.Value,
-                                Total = valor,
-                                SaldoPendiente = valor 
-                            };
-                            
-                            Memoria.TransaccionesEntrantes.Push(nuevaFactura);
+                                facturasDuplicadas++;
+                            }
+                            else
+                            {
+                                Factura nuevaFactura = new Factura
+                                {
+                                    Numero = numero,
+                                    NITCliente = matchNIT.Value,
+                                    Fecha = matchFecha.Value,
+                                    Total = valor,
+                                    SaldoPendiente = valor 
+                                };
+                                Memoria.TransaccionesEntrantes.Push(nuevaFactura);
+                                facturasNuevas++;
+                            }
                         }
+                        else
+                        {
+                            facturasError++;
+                        }
+                    }
+                    else
+                    {
+                        facturasError++;
                     }
                 }
             }
@@ -164,31 +224,59 @@ namespace BackendAPI.Utilidades
                                 Fecha = matchFecha.Value,
                                 Importe = importe
                             };
-                            
                             Memoria.TransaccionesEntrantes.Push(nuevoPago);
+                            pagosNuevos++;
                         }
+                        else
+                        {
+                            pagosError++;
+                        }
+                    }
+                    else
+                    {
+                        pagosError++;
                     }
                 }
             }
         }
 
-        public string GenerarRespuestaTransacciones()
+        private bool ExisteFactura(string numero)
         {
-            string xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-            xml += "<respuestas>\n";
-
             Nodo actualCliente = Memoria.ListaClientes.Cabeza;
             while (actualCliente != null)
             {
                 Cliente c = (Cliente)actualCliente.Dato;
-                xml += "  <cliente>\n";
-                xml += $"    <nit>{c.NIT}</nit>\n";
-                xml += $"    <pago_recibido>{c.SaldoAFavor}</pago_recibido>\n";
-                xml += "  </cliente>\n";
+                Nodo actualFactura = c.Facturas.Cabeza;
+                while (actualFactura != null)
+                {
+                    Factura f = (Factura)actualFactura.Dato;
+                    if (f.Numero == numero)
+                    {
+                        return true;
+                    }
+                    actualFactura = actualFactura.Siguiente;
+                }
                 actualCliente = actualCliente.Siguiente;
             }
+            return false;
+        }
 
-            xml += "</respuestas>";
+        public string GenerarRespuestaTransacciones()
+        {
+            string xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+            xml += "<transacciones>\n";
+            xml += "  <facturas>\n";
+            xml += $"    <nuevasFacturas>{facturasNuevas}</nuevasFacturas>\n";
+            xml += $"    <facturasDuplicadas>{facturasDuplicadas}</facturasDuplicadas>\n";
+            xml += $"    <facturasConError>{facturasError}</facturasConError>\n";
+            xml += "  </facturas>\n";
+            xml += "  <pagos>\n";
+            xml += $"    <nuevosPagos>{pagosNuevos}</nuevosPagos>\n";
+            xml += $"    <pagosDuplicados>{pagosDuplicados}</pagosDuplicados>\n";
+            xml += $"    <pagosConError>{pagosError}</pagosConError>\n";
+            xml += "  </pagos>\n";
+            xml += "</transacciones>";
+            
             return xml;
         }
     }

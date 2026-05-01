@@ -55,7 +55,7 @@ namespace BackendAPI.Utilidades
 
             if (factura.SaldoPendiente > 0)
             {
-                cliente.FacturasPendientes.Push(factura);
+                cliente.Facturas.Agregar(factura);
             }
 
             cliente.Historial.Push(factura);
@@ -69,6 +69,9 @@ namespace BackendAPI.Utilidades
                 ErroresLogicos.Add($"Pago rechazado: El banco con código {pago.CodigoBanco} no existe en el sistema.");
                 return;
             }
+              
+            banco.TotalRecaudado += pago.Importe;
+            banco.PagosRecibidos.Agregar(pago);
 
             Cliente cliente = BuscarCliente(pago.NITCliente);
             if (cliente == null)
@@ -78,16 +81,17 @@ namespace BackendAPI.Utilidades
             }
 
             cliente.SaldoAFavor += pago.Importe;
+            cliente.TotalPagado += pago.Importe; 
 
-            while (cliente.SaldoAFavor > 0 && !cliente.FacturasPendientes.EstaVacia())
+            while (cliente.SaldoAFavor > 0 && !cliente.Facturas.EstaVacia())
             {
-                Factura facturaMasAntigua = (Factura)cliente.FacturasPendientes.Primero();
+                Factura facturaMasAntigua = (Factura)cliente.Facturas.Cabeza.Dato;
 
                 if (cliente.SaldoAFavor >= facturaMasAntigua.SaldoPendiente)
                 {
                     cliente.SaldoAFavor -= facturaMasAntigua.SaldoPendiente;
                     facturaMasAntigua.SaldoPendiente = 0;
-                    cliente.FacturasPendientes.Pop();
+                    cliente.Facturas.EliminarCabeza();
                 }
                 else
                 {

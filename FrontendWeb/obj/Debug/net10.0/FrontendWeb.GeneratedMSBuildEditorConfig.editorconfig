@@ -30,12 +30,24 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Emanuel/Proyecto3_ITGSA/IPC2_Proyecto3_201907719/FrontendWeb/Pages/EstadoCuenta.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXN0YWRvQ3VlbnRhLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Emanuel/Proyecto3_ITGSA/IPC2_Proyecto3_201907719/FrontendWeb/Pages/Graficas.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcR3JhZmljYXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Emanuel/Proyecto3_ITGSA/IPC2_Proyecto3_201907719/FrontendWeb/Pages/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Emanuel/Proyecto3_ITGSA/IPC2_Proyecto3_201907719/FrontendWeb/Pages/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJpdmFjeS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Emanuel/Proyecto3_ITGSA/IPC2_Proyecto3_201907719/FrontendWeb/Pages/Resetear.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVzZXRlYXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Emanuel/Proyecto3_ITGSA/IPC2_Proyecto3_201907719/FrontendWeb/Pages/Shared/_ValidationScriptsPartial.cshtml]

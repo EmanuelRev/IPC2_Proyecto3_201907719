@@ -11,7 +11,8 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">ITGSA</a>
+                <!-- Cambiado a href directo -->
+                <a class="navbar-brand" href="/Index">ITGSA</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -19,16 +20,23 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-page="/CargaArchivos">Cargar Archivos</a>
+                            <!-- Cambiado a href directo -->
+                            <a class="nav-link text-dark" href="/CargaArchivos">Cargar Archivos</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-page="/EstadoCuenta">Estado de Cuenta</a>
+                            <!-- Cambiado a href directo -->
+                            <a class="nav-link text-dark" href="/EstadoCuenta">Estado de Cuenta</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-page="/Graficas">Ingresos</a>
+                            <!-- Cambiado a href directo -->
+                            <a class="nav-link text-dark" href="/Graficas">Ingresos</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-page="/Ayuda">Ayuda</a>
+                            <a class="nav-link text-danger fw-bold" href="/Resetear">Resetear Datos</a>
+                        </li>
+                        <li class="nav-item">
+                            <!-- Cambiado a href directo -->
+                            <a class="nav-link text-dark" href="/Ayuda">Ayuda</a>
                         </li>
                     </ul>
                 </div>
@@ -41,7 +49,8 @@
         </main>
     </div>
 
-    <script src="~/lib/jquery/dist/jquery.min.css"></script>
+    <!-- Se corrigió el jquery.min.css a jquery.min.js -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 

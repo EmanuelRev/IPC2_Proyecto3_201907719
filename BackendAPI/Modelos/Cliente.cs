@@ -9,11 +9,8 @@ namespace BackendAPI.Modelos
         public string NIT { get; set; }
         public string Nombre { get; set; }
         public decimal SaldoAFavor { get; set; } = 0;
-        
-    
-        public Cola FacturasPendientes { get; set; } = new Cola();
-
-        
+        public decimal TotalPagado { get; set; } = 0; 
+        public ListaEnlazada Facturas { get; set; } = new ListaEnlazada();
         public Pila Historial { get; set; } = new Pila();
     }
 }

@@ -1,0 +1,35 @@
+@page
+@model FrontendWeb.Pages.ResetearModel
+@{
+    ViewData["Title"] = "Resetear Sistema";
+}
+
+<div class="container text-center mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="display-4 text-danger fw-bold">Resetear Datos del Sistema</h1>
+            <p class="lead mb-4">
+                ¡Atención! Al ejecutar esta acción, el sistema borrará permanentemente todos los <strong>Clientes, Bancos, Facturas y Pagos</strong> de la memoria actual.
+            </p>
+            
+            @if (!string.IsNullOrEmpty(Model.MensajeSistema))
+            {
+                <div class="alert @Model.TipoAlerta fs-5">
+                    @Model.MensajeSistema
+                </div>
+            }
+
+            <div class="card shadow-sm border-danger">
+                <div class="card-body py-5">
+                    <h5 class="card-title">¿Estás completamente seguro?</h5>
+                    <!-- El formulario que envía la petición POST al C# -->
+                    <form method="post">
+                        <button type="submit" class="btn btn-danger btn-lg mt-3 px-5">
+                            Sí, Vaciar Memoria
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

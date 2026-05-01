@@ -1,0 +1,149 @@
+@page
+@model FrontendWeb.Pages.GraficasModel
+@{
+    ViewData["Title"] = "Ingresos por Banco";
+}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<div class="text-center mb-4">
+    <h1 class="display-4">Reporte de Ingresos</h1>
+    <p>Visualización de recaudación de los últimos 3 meses por banco.</p>
+
+    <div class="row justify-content-center mb-3">
+        <div class="col-md-4">
+            <div class="input-group">
+                <input type="month" id="filtroMes" class="form-control" value="2024-03">
+                <button class="btn btn-primary" onclick="cargarGraficaTresMeses()">Consultar</button>
+                <button class="btn btn-danger" onclick="generarPDF()">📄 PDF</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.MensajeError))
+{
+    <div class="alert alert-danger">
+        <strong>¡Ocurrió un error!</strong> @Model.MensajeError
+    </div>
+}
+
+<div id="zonaPDF" class="p-4 bg-white">
+    <div class="text-center mb-4 d-none" id="tituloPDF">
+        <h2>Reporte de Ingresos por Banco (Trimestral) - ITGSA</h2>
+        <h4 id="subtituloPDF"></h4>
+        <hr />
+    </div>
+
+    <div class="card shadow-sm p-3">
+        <canvas id="graficaBancos" style="max-height: 500px;"></canvas>
+    </div>
+</div>
+
+<script>
+    let myChart = null;
+
+    function cargarGraficaTresMeses() {
+        const fechaVal = document.getElementById('filtroMes').value;
+        if (!fechaVal) return;
+
+        const [anio, mes] = fechaVal.split('-');
+        
+        fetch(`http://localhost:5184/api/consultas/ingresos-tres-meses?mes=${mes}&anio=${anio}`)
+            .then(response => response.json())
+            .then(data => {
+                const nombres = data.map(b => b.nombre);
+                const mes1 = data.map(b => b.m1);
+                const mes2 = data.map(b => b.m2);
+                const mes3 = data.map(b => b.m3);
+
+                const mesesNombres = obtenerNombresMeses(parseInt(mes), parseInt(anio));
+                document.getElementById('subtituloPDF').innerText = `Periodo: ${mesesNombres[2]} a ${mesesNombres[0]}`;
+
+                renderizarGrafica(nombres, mes1, mes2, mes3, mesesNombres);
+            })
+            .catch(err => console.error("Error al obtener datos:", err));
+    }
+
+    function obtenerNombresMeses(mes, anio) {
+        const nombres = [];
+        for (let i = 0; i < 3; i++) {
+            let m = mes - i;
+            let a = anio;
+            if (m <= 0) { m += 12; a--; }
+            const date = new Date(a, m - 1, 1);
+            nombres.push(date.toLocaleString('es-ES', { month: 'long', year: 'numeric' }));
+        }
+        return nombres;
+    }
+
+    function renderizarGrafica(nombres, m1, m2, m3, labelsMeses) {
+        const ctx = document.getElementById('graficaBancos').getContext('2d');
+        
+        if (myChart) {
+            myChart.destroy();
+        }
+
+        myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: nombres,
+                datasets: [
+                    {
+                        label: labelsMeses[0],
+                        data: m1,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: labelsMeses[1],
+                        data: m2,
+                        backgroundColor: 'rgba(255, 159, 64, 0.7)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: labelsMeses[2],
+                        data: m3,
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Quetzales (Q)' }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'top' }
+                }
+            }
+        });
+    }
+
+    function generarPDF() {
+        const elemento = document.getElementById('zonaPDF');
+        document.getElementById('tituloPDF').classList.remove('d-none');
+
+        const opciones = {
+            margin: 10,
+            filename: 'Reporte_Ingresos_Trimestral.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+        };
+
+        html2pdf().set(opciones).from(elemento).save().then(() => {
+            document.getElementById('tituloPDF').classList.add('d-none');
+        });
+    }
+
+    window.onload = cargarGraficaTresMeses;
+</script>

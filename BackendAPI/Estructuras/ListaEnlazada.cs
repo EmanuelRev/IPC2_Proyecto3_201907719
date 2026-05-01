@@ -23,5 +23,23 @@ namespace BackendAPI.Estructuras
                 actual.Siguiente = nuevo;
             }
         }
+
+        public void Limpiar()
+        {
+            Cabeza = null;
+        }
+
+        public void EliminarCabeza()
+        {
+            if (Cabeza != null)
+            {
+                Cabeza = Cabeza.Siguiente;
+            }
+        }
+
+        public bool EstaVacia()
+        {
+            return Cabeza == null;
+        }
     }
 }
