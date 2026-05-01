@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BackendAPI.Estructuras;
 using BackendAPI.Modelos;
 using BackendAPI.Datos;
@@ -17,32 +18,44 @@ namespace BackendAPI.Controllers
         public IActionResult ObtenerEstadoClientes()
         {
             var listaResumen = new List<object>();
-
             Nodo actual = Memoria.ListaClientes.Cabeza;
+
             while (actual != null)
             {
                 Cliente c = (Cliente)actual.Dato;
+                var transacciones = new List<object>();
+                
+                Nodo temp = c.Historial.Tope;
+                while (temp != null)
+                {
+                    transacciones.Add(temp.Dato);
+                    temp = temp.Siguiente;
+                }
+                
+                transacciones.Reverse();
 
                 listaResumen.Add(new
                 {
                     nit = c.NIT,
                     nombre = c.Nombre,
-                    totalPagado = c.TotalPagado, 
-                    saldoAFavor = c.SaldoAFavor
+                    totalPagado = c.TotalPagado,
+                    saldoAFavor = c.SaldoAFavor,
+                    historial = transacciones
                 });
 
                 actual = actual.Siguiente;
             }
 
-            return Ok(listaResumen);
+            var listaOrdenada = listaResumen.OrderBy(x => ((dynamic)x).nit).ToList();
+            return Ok(listaOrdenada);
         }
 
         [HttpGet("bancos")]
         public IActionResult ObtenerIngresosBancos()
         {
             var listaIngresos = new List<object>();
-
             Nodo actual = Memoria.ListaBancos.Cabeza;
+
             while (actual != null)
             {
                 Banco b = (Banco)actual.Dato;
@@ -74,7 +87,7 @@ namespace BackendAPI.Controllers
                 {
                     int mesBusqueda = mes - i;
                     int anioBusqueda = anio;
-                    
+
                     if (mesBusqueda <= 0)
                     {
                         mesBusqueda += 12;
@@ -102,10 +115,10 @@ namespace BackendAPI.Controllers
                     m2 = totales[1],
                     m3 = totales[2]
                 });
-                
+
                 actualBanco = actualBanco.Siguiente;
             }
-            
+
             return Ok(resultado);
         }
     }

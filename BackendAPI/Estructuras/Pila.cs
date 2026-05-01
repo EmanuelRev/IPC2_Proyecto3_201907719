@@ -4,34 +4,34 @@ namespace BackendAPI.Estructuras
 {
     public class Pila
     {
-        private Nodo tope;
+        public Nodo Tope { get; private set; }
 
         public void Push(object dato)
         {
             Nodo nuevo = new Nodo(dato);
-            nuevo.Siguiente = tope;
-            tope = nuevo;
+            nuevo.Siguiente = Tope;
+            Tope = nuevo;
         }
 
         public object Pop()
         {
-            if (EstaVacia()) return null;
-
-            object dato = tope.Dato;
-            tope = tope.Siguiente;
-
+            if (EstaVacia())
+            {
+                return null;
+            }
+            object dato = Tope.Dato;
+            Tope = Tope.Siguiente;
             return dato;
         }
 
-        public object Primero()
+        public object VerTope()
         {
-            if (EstaVacia()) return null;
-            return tope.Dato;
+            return Tope != null ? Tope.Dato : null;
         }
 
         public bool EstaVacia()
         {
-            return tope == null;
+            return Tope == null;
         }
     }
 }
